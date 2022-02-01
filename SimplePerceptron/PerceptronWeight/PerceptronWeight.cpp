@@ -92,12 +92,12 @@ int verifyShow(dataPoint* checking, float testWeights[2], float testBias) {
         return false;
     }
 };
-void updateWeight(float *currentWeight, dataPoint* checking) {
-    currentWeight[0] += checking->yValue * checking->value[0];
-    currentWeight[1] += checking->yValue * checking->value[1];
+void updateWeight(float currentWeight[], dataPoint* checking) {
+    currentWeight[0] += (checking->yValue * checking->value[0]);
+    currentWeight[1] += (checking->yValue * checking->value[1]);
 };
-void updateBias(float* currentBias, dataPoint* checking) {
-    *currentBias = *currentBias + checking->yValue;
+float updateBias(float currentBias, dataPoint* checking) {
+    return(currentBias + checking->yValue);
 };
 float dataLength(float value1, float value2) {
     float result;
@@ -107,7 +107,7 @@ float dataLength(float value1, float value2) {
 
 int main() {
     dataPointLinkedList dataSet;
-    float weight[2];
+    float* weight = new float[2];
     float initialWeight[2];
     float bias;
     float initialBias;
@@ -120,6 +120,7 @@ int main() {
     cin >> initialWeight[1];
     weight[0] = initialWeight[0];
     weight[1] = initialWeight[1];
+    cout << weight[0] << " " << weight[1] << endl;
     cout << "Enter initial bias value:" << endl;
     cin >> initialBias;
     bias = initialBias;
@@ -158,7 +159,7 @@ int main() {
             while (correctClassifications < dataPointCount) {
                 if (verifyWeights(dataSet.getIndex(index), weight, bias) == false) {
                     updateWeight(weight, dataSet.getIndex(index));
-                    updateBias(&bias, dataSet.getIndex(index));
+                    bias = updateBias(bias, dataSet.getIndex(index));
                     misclassificationCount++;
                     correctClassifications = 0;
                 }
@@ -185,8 +186,9 @@ int main() {
             cout << "Starting bias: " << initialBias << endl;
         }
         if (request == "ShowWork") {
-            weight[0] = 0;
-            weight[1] = 0;
+            weight[0] = initialWeight[0];
+            weight[1] = initialWeight[1];
+            bias = initialBias;
             misclassificationCount = 0;
             correctClassifications = 0;
             index = 0;
@@ -197,7 +199,7 @@ int main() {
                     cout << "Updating weight" << endl;
                     updateWeight(weight, dataSet.getIndex(index));
                     cout << "Updating bias" << endl;
-                    updateBias(&bias, dataSet.getIndex(index));
+                    bias = updateBias(bias, dataSet.getIndex(index));
                     misclassificationCount++;
                     correctClassifications = 0;
                     cout << "Consecutive correct classifications reset" << endl << endl;
@@ -218,7 +220,8 @@ int main() {
             cout << "Number of misclassifications: " << misclassificationCount << endl;
         }
         if (request == "End") {
-            return 1;
+            delete[] weight;
+	        return 1;
         }
     }
 }
