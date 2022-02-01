@@ -221,7 +221,7 @@ int main() {
         }
         if (request == "End") {
             delete[] weight;
-	        return 1;
+	    return 1;
         }
     }
 }
